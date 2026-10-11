@@ -1,3 +1,5 @@
+import path from 'path';
+import serve from 'koa-static';
 import { Server, Origins } from 'boardgame.io/server';
 import { CoupGame } from '../src/game/CoupGame';
 
@@ -7,10 +9,13 @@ const server = Server({
   games: [CoupGame],
   origins: [
     Origins.LOCALHOST_IN_DEVELOPMENT,
-    // Add your production domain here when deploying:
-    // 'https://coup-web.vercel.app',
+    // Render sets RENDER_EXTERNAL_URL to the service's public URL.
+    ...(process.env.RENDER_EXTERNAL_URL ? [process.env.RENDER_EXTERNAL_URL] : []),
   ],
 });
+
+// Serve the built client (dist/client) so the app and server share one origin.
+server.app.use(serve(path.resolve(__dirname, '../client')));
 
 // Simple health-check endpoint so uptime monitors can keep the instance warm.
 server.router.get('/health', (ctx) => {
