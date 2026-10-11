@@ -35,9 +35,9 @@
 
 .card {
   position: relative;
-  width: 108px;
+  width: calc(108px * var(--hand-card-scale, 2.5));
   aspect-ratio: 400 / 560;
-  border-radius: 10px;
+  border-radius: 20px;
   overflow: hidden;
   border: 2px solid var(--color-card-border);
   background: #111;

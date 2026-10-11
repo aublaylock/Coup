@@ -3,7 +3,7 @@
  * (and your hand) always sits right after the scrollable content instead of a
  * fixed overlay that can cover whatever happens to be at the bottom of it. */
 .board {
-  max-width: 1000px;
+  max-width: 1600px;
   margin: 0 auto;
   height: 100vh;
   overflow: hidden;
@@ -19,7 +19,8 @@
   flex-wrap: wrap;
   gap: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 16px 20px 12px;
+  /* Right padding leaves room for the fixed settings/info buttons. */
+  padding: 16px 120px 12px 20px;
 }
 
 .scrollArea {

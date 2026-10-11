@@ -8,7 +8,7 @@
 .felt {
   position: relative;
   width: 100%;
-  max-width: 760px;
+  max-width: 1500px;
   aspect-ratio: 16 / 10;
   background: radial-gradient(ellipse at center, #2f6b45 0%, #1d4a30 65%, #123420 100%);
   border: 10px solid #3a2418;
@@ -31,17 +31,17 @@
 
 .deckStack {
   position: relative;
-  width: 56px;
-  height: 78px;
+  width: calc(56px * var(--table-card-scale, 2.5));
+  height: calc(78px * var(--table-card-scale, 2.5));
 }
 
 .deckCard {
   position: absolute;
   left: 0;
   top: 0;
-  width: 56px;
+  width: calc(56px * var(--table-card-scale, 2.5));
   aspect-ratio: 400 / 560;
-  border-radius: 5px;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
 }
@@ -67,10 +67,10 @@
 }
 
 .emptyDeck {
-  width: 56px;
-  height: 78px;
+  width: calc(56px * var(--table-card-scale, 2.5));
+  height: calc(78px * var(--table-card-scale, 2.5));
   border: 2px dashed rgba(255, 255, 255, 0.3);
-  border-radius: 5px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;

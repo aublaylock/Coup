@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.COIN_IMAGE = exports.CARD_BACK_IMAGE = exports.ROLE_INFO = exports.ALL_ROLES = void 0;
+exports.INFO_CARD_IMAGE = exports.COIN_IMAGE = exports.CARD_BACK_IMAGE = exports.ROLE_INFO = exports.ALL_ROLES = void 0;
 exports.buildDeck = buildDeck;
 exports.ALL_ROLES = ['duke', 'assassin', 'captain', 'ambassador', 'contessa'];
 exports.ROLE_INFO = {
@@ -37,6 +37,7 @@ exports.ROLE_INFO = {
 };
 exports.CARD_BACK_IMAGE = '/cards/back.png';
 exports.COIN_IMAGE = '/cards/coin.png';
+exports.INFO_CARD_IMAGE = '/cards/info.png';
 /** Build the standard 15-card Coup deck: 3 copies each of 5 roles. */
 function buildDeck() {
     const deck = [];

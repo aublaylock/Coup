@@ -8,13 +8,13 @@
 
 .cards {
   display: flex;
-  gap: 4px;
+  gap: 10px;
 }
 
 .card {
-  width: 48px;
+  width: calc(48px * var(--table-card-scale, 2.5));
   aspect-ratio: 400 / 560;
-  border-radius: 5px;
+  border-radius: 12px;
   overflow: hidden;
   background: #111;
   border: 1px solid rgba(255, 255, 255, 0.2);

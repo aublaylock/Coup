@@ -1,0 +1,63 @@
+.infoBtn {
+  position: fixed;
+  top: 14px;
+  right: 16px;
+  z-index: 1500;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--color-accent);
+  background: var(--color-surface);
+  color: var(--color-accent);
+  font-family: Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  font-style: italic;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.infoBtn:hover {
+  background: var(--color-accent);
+  color: #1a1a1a;
+}
+
+/* Above the reveal/exchange modals (1000) and game-over overlay (2000). */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  padding: 16px;
+}
+
+.modal {
+  position: relative;
+  max-width: 1024px;
+  width: 100%;
+}
+
+.infoImg {
+  display: block;
+  width: 100%;
+  max-height: calc(100vh - 32px);
+  object-fit: contain;
+  border-radius: var(--radius);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+}
+
+.closeBtn {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--color-accent);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 1.2rem;
+  line-height: 1;
+}
