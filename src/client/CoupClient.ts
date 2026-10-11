@@ -13,6 +13,12 @@ const _CoupClientImpl = Client({
   board: Board,
   multiplayer: SocketIO({ server: SERVER }),
   debug: false,
-}) as React.ComponentType<{ matchID: string; playerID: string; credentials: string }>;
+}) as React.ComponentType<{
+  matchID: string;
+  playerID: string;
+  credentials: string;
+  // Passed through to the board, which shows it on the game-over screen.
+  onNewGame: () => Promise<void>;
+}>;
 
 export const CoupClient = _CoupClientImpl;

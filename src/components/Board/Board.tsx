@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { BoardProps } from 'boardgame.io/react';
 import type { CoupState } from '../../game/types';
 import { isEliminated } from '../../game/helpers';
@@ -10,9 +11,14 @@ import { ExchangeModal } from '../ExchangeModal/ExchangeModal';
 import { GameLog } from '../GameLog/GameLog';
 import styles from './Board.module.css';
 
-export type CoupBoardProps = BoardProps<CoupState>;
+export type CoupBoardProps = BoardProps<CoupState> & {
+  /** Moves everyone who clicks it into the same fresh match (via the Lobby API's playAgain). */
+  onNewGame?: () => Promise<void>;
+};
 
-export function Board({ G, ctx, moves, playerID, matchData }: CoupBoardProps) {
+export function Board({ G, ctx, moves, playerID, matchData, onNewGame }: CoupBoardProps) {
+  const [newGameState, setNewGameState] = useState<'idle' | 'loading' | 'error'>('idle');
+
   const names: Record<string, string> = {};
   (matchData ?? []).forEach((p) => {
     names[String(p.id)] = p.name ?? `Player ${p.id + 1}`;
@@ -81,7 +87,24 @@ export function Board({ G, ctx, moves, playerID, matchData }: CoupBoardProps) {
         <div className={styles.gameoverOverlay}>
           <div className={styles.gameoverModal}>
             <h2>{gameover.winner ? `${nameOf(gameover.winner)} wins!` : 'Game over'}</h2>
-            <p>Use the "Leave Match" button to return to the lobby.</p>
+            {onNewGame && playerID && (
+              <button
+                className={styles.newGameBtn}
+                disabled={newGameState === 'loading'}
+                onClick={async () => {
+                  setNewGameState('loading');
+                  try {
+                    await onNewGame();
+                  } catch {
+                    setNewGameState('error');
+                  }
+                }}
+              >
+                {newGameState === 'loading' ? 'Starting…' : 'New Game'}
+              </button>
+            )}
+            {newGameState === 'error' && <p className={styles.newGameError}>Couldn't start a new game. Try again.</p>}
+            <p>Everyone who clicks "New Game" joins the same new match with these players.</p>
           </div>
         </div>
       )}
@@ -109,6 +132,7 @@ export function Board({ G, ctx, moves, playerID, matchData }: CoupBoardProps) {
 
           {myPlayer && playerID && (
             <div className={styles.handLayer}>
+              <Hand name={nameOf(playerID)} player={myPlayer} />
               <div className={styles.contextZone}>
                 {myStage === 'declaring' && <ActionBar coins={myPlayer.coins} targets={targets} moves={moves} />}
                 {myStage === 'reacting' && G.pending && (
@@ -118,7 +142,6 @@ export function Board({ G, ctx, moves, playerID, matchData }: CoupBoardProps) {
                   <p className={styles.waitMsg}>Waiting for {nameOf(currentPlayerID)}…</p>
                 )}
               </div>
-              <Hand name={nameOf(playerID)} player={myPlayer} />
             </div>
           )}
         </div>

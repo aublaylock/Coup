@@ -159,6 +159,23 @@ export function LobbyScreen({ serverURL }: LobbyScreenProps) {
     setError('');
   };
 
+  // Every player who calls playAgain on a finished match gets the same
+  // nextMatchID back, so they all land in one new match in their old seats.
+  const handleNewGame = async () => {
+    if (!matchInfo) return;
+    const { nextMatchID } = await lobbyClient.playAgain('coup', matchInfo.matchID, {
+      playerID: matchInfo.playerID,
+      credentials: matchInfo.credentials,
+    });
+    const { playerCredentials } = await lobbyClient.joinMatch('coup', nextMatchID, {
+      playerID: matchInfo.playerID,
+      playerName: matchInfo.playerName,
+    });
+    const info: MatchInfo = { ...matchInfo, matchID: nextMatchID, credentials: playerCredentials };
+    setMatchInfo(info);
+    saveSession(info);
+  };
+
   const handleCopy = () => {
     if (!matchInfo) return;
     navigator.clipboard.writeText(matchInfo.matchID).then(() => {
@@ -170,7 +187,13 @@ export function LobbyScreen({ serverURL }: LobbyScreenProps) {
   if (view === 'game' && matchInfo) {
     return (
       <>
-        <CoupClient matchID={matchInfo.matchID} playerID={matchInfo.playerID} credentials={matchInfo.credentials} />
+        <CoupClient
+          key={matchInfo.matchID}
+          matchID={matchInfo.matchID}
+          playerID={matchInfo.playerID}
+          credentials={matchInfo.credentials}
+          onNewGame={handleNewGame}
+        />
         <button
           onClick={handleLeave}
           style={{
