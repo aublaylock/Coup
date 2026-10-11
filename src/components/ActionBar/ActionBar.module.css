@@ -1,0 +1,55 @@
+.bar {
+  background: var(--color-surface);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+
+.prompt {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  margin-bottom: 10px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.actionBtn,
+.targetBtn,
+.cancelBtn {
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-text);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.actionBtn:hover:not(:disabled),
+.targetBtn:hover {
+  border-color: var(--color-accent);
+}
+
+.actionBtn:disabled {
+  opacity: 0.3;
+}
+
+.cost {
+  color: var(--color-accent);
+  font-weight: 800;
+  margin-left: 4px;
+}
+
+.targetBtn {
+  background: rgba(212, 175, 55, 0.12);
+}
+
+.cancelBtn {
+  background: rgba(230, 57, 70, 0.15);
+  border-color: var(--color-danger);
+}

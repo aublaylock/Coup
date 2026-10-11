@@ -1,0 +1,43 @@
+.panel {
+  background: var(--color-surface);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+
+.description {
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+  color: var(--color-text);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pass,
+.challenge,
+.block {
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.pass {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.challenge {
+  background: rgba(230, 57, 70, 0.15);
+  border-color: var(--color-danger);
+}
+
+.block {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: var(--color-accent);
+}

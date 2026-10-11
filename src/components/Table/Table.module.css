@@ -1,0 +1,93 @@
+.tableWrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 20px;
+}
+
+.felt {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  aspect-ratio: 16 / 10;
+  background: radial-gradient(ellipse at center, #2f6b45 0%, #1d4a30 65%, #123420 100%);
+  border: 10px solid #3a2418;
+  border-radius: 50% / 45%;
+  box-shadow:
+    inset 0 0 70px rgba(0, 0, 0, 0.55),
+    0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+.centerPile {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.deckStack {
+  position: relative;
+  width: 56px;
+  height: 78px;
+}
+
+.deckCard {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 56px;
+  aspect-ratio: 400 / 560;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+}
+
+.deckCard:nth-child(1) {
+  transform: translate(0, 0) rotate(-2deg);
+  z-index: 4;
+}
+
+.deckCard:nth-child(2) {
+  transform: translate(2px, -2px) rotate(1deg);
+  z-index: 3;
+}
+
+.deckCard:nth-child(3) {
+  transform: translate(4px, -4px) rotate(-1deg);
+  z-index: 2;
+}
+
+.deckCard:nth-child(4) {
+  transform: translate(6px, -6px) rotate(2deg);
+  z-index: 1;
+}
+
+.emptyDeck {
+  width: 56px;
+  height: 78px;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  color: var(--color-text-muted);
+}
+
+.deckLabel {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.seatSlot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}

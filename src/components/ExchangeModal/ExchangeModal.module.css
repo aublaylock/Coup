@@ -1,0 +1,81 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal {
+  background: var(--color-surface);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+}
+
+.modal h2 {
+  color: var(--color-accent);
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+}
+
+.hint {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 18px;
+}
+
+.pool {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.card {
+  background: var(--color-card);
+  color: #1a1a1a;
+  border: 2px solid var(--color-card-border);
+  border-radius: var(--radius-card);
+  padding: 8px 12px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  min-width: 90px;
+}
+
+.selected {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent);
+}
+
+.cardImg {
+  width: 84px;
+  aspect-ratio: 400 / 560;
+  object-fit: cover;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.confirmBtn {
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  border: none;
+  background: var(--color-accent);
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+.confirmBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
