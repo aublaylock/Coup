@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { ACTION_BLOCKERS } from '../../game/deck';
+import { roleLabel } from '../../game/helpers';
 import styles from './ActionBar.module.css';
 
 type TargetAction = 'steal' | 'assassinate' | 'coup';
@@ -14,6 +16,23 @@ const TARGET_LABEL: Record<TargetAction, string> = {
   assassinate: 'assassinate',
   coup: 'coup',
 };
+
+type ActionKey = keyof typeof ACTION_BLOCKERS;
+
+// Actions only the targeted player may block; anyone may block the rest.
+const TARGET_ONLY_BLOCK: ActionKey[] = ['steal', 'assassinate'];
+
+function blockHint(action: ActionKey): string {
+  const roles = ACTION_BLOCKERS[action];
+  if (roles.length === 0) return "Can't be blocked";
+  const names = roles.map(roleLabel).join(' or ');
+  return TARGET_ONLY_BLOCK.includes(action) ? `Target can block with ${names}` : `Any player can block with ${names}`;
+}
+
+/** Hover hint naming who can block the action. Shown via CSS on button hover. */
+function BlockHint({ action }: { action: ActionKey }) {
+  return <span className={styles.hint}>{blockHint(action)}</span>;
+}
 
 export function ActionBar({ coins, targets, moves }: ActionBarProps) {
   const [pendingTargetAction, setPendingTargetAction] = useState<TargetAction | null>(null);
@@ -51,12 +70,15 @@ export function ActionBar({ coins, targets, moves }: ActionBarProps) {
       <div className={styles.row}>
         <button className={styles.actionBtn} disabled={mustCoup} onClick={() => moves.income()}>
           Income <span className={styles.cost}>+1</span>
+          <BlockHint action="income" />
         </button>
         <button className={styles.actionBtn} disabled={mustCoup} onClick={() => moves.foreignAid()}>
           Foreign Aid <span className={styles.cost}>+2</span>
+          <BlockHint action="foreign_aid" />
         </button>
         <button className={styles.actionBtn} disabled={mustCoup} onClick={() => moves.tax()}>
           Tax (Duke) <span className={styles.cost}>+3</span>
+          <BlockHint action="tax" />
         </button>
         <button
           className={styles.actionBtn}
@@ -64,6 +86,7 @@ export function ActionBar({ coins, targets, moves }: ActionBarProps) {
           onClick={() => setPendingTargetAction('steal')}
         >
           Steal (Captain) <span className={styles.cost}>+2</span>
+          <BlockHint action="steal" />
         </button>
         <button
           className={styles.actionBtn}
@@ -71,9 +94,11 @@ export function ActionBar({ coins, targets, moves }: ActionBarProps) {
           onClick={() => setPendingTargetAction('assassinate')}
         >
           Assassinate <span className={styles.cost}>-3</span>
+          <BlockHint action="assassinate" />
         </button>
         <button className={styles.actionBtn} disabled={mustCoup} onClick={() => moves.exchange()}>
           Exchange (Ambassador)
+          <BlockHint action="exchange" />
         </button>
         <button
           className={styles.actionBtn}
@@ -81,6 +106,7 @@ export function ActionBar({ coins, targets, moves }: ActionBarProps) {
           onClick={() => setPendingTargetAction('coup')}
         >
           Coup <span className={styles.cost}>-7</span>
+          <BlockHint action="coup" />
         </button>
       </div>
     </div>

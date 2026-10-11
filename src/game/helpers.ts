@@ -1,4 +1,4 @@
-import type { CoupPlayer, CoupState, Role } from './types';
+import type { Callout, CoupPlayer, CoupState, Role } from './types';
 import { ROLE_INFO } from './deck';
 
 export function isEliminated(player: CoupPlayer): boolean {
@@ -13,6 +13,15 @@ export function activeSeats(G: CoupState): string[] {
 export function addLog(G: CoupState, text: string): void {
   G.log.push({ id: G.nextLogID++, text });
   if (G.log.length > 60) G.log.shift();
+}
+
+/** Start a new turn's callouts with the action `playerID` just declared. */
+export function declareAction(G: CoupState, playerID: string, text: string): void {
+  G.callouts = { [playerID]: [{ kind: 'action', text }] };
+}
+
+export function addCallout(G: CoupState, playerID: string, kind: Callout['kind'], text: string): void {
+  (G.callouts[playerID] ??= []).push({ kind, text });
 }
 
 // Moves don't have reliable access to display names server-side (boardgame.io's

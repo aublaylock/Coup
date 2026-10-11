@@ -1,4 +1,4 @@
-import type { CoupPlayer, Role } from '../../game/types';
+import type { Callout, CoupPlayer, Role } from '../../game/types';
 import { ROLE_INFO, CARD_BACK_IMAGE, COIN_IMAGE } from '../../game/deck';
 import styles from './PlayerPanel.module.css';
 
@@ -7,6 +7,8 @@ interface PlayerPanelProps {
   player: CoupPlayer;
   isCurrentTurn: boolean;
   eliminated: boolean;
+  /** This player's actions/blocks/challenges this turn, oldest first, with names already resolved. */
+  callouts: Callout[];
 }
 
 function CardFace({ role, revealed }: { role: Role | 'hidden'; revealed: boolean }) {
@@ -19,11 +21,20 @@ function CardFace({ role, revealed }: { role: Role | 'hidden'; revealed: boolean
   );
 }
 
-export function PlayerPanel({ name, player, isCurrentTurn, eliminated }: PlayerPanelProps) {
+export function PlayerPanel({ name, player, isCurrentTurn, eliminated, callouts }: PlayerPanelProps) {
   return (
     <div className={[styles.seat, isCurrentTurn ? styles.currentTurn : '', eliminated ? styles.eliminated : ''].join(' ')}>
       {isCurrentTurn && !eliminated && <div className={styles.turnBadge}>Turn</div>}
       {eliminated && <div className={styles.outBanner}>OUT</div>}
+      {callouts.length > 0 && (
+        <div className={styles.callouts}>
+          {callouts.map((c, i) => (
+            <div key={i} className={`${styles.actionBubble} ${styles[c.kind]}`}>
+              {c.text}
+            </div>
+          ))}
+        </div>
+      )}
       <div className={styles.cards}>
         {player.influence.map((c, i) => (
           <CardFace key={i} role={c.role} revealed={c.revealed} />

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { BoardProps } from 'boardgame.io/react';
 import type { CoupState } from '../../game/types';
-import { isEliminated } from '../../game/helpers';
+import { isEliminated, resolveNameTags } from '../../game/helpers';
 import { Table } from '../Table/Table';
 import { Hand } from '../Hand/Hand';
 import { ActionBar } from '../ActionBar/ActionBar';
@@ -69,6 +69,8 @@ export function Board({ G, ctx, moves, playerID, matchData, onNewGame }: CoupBoa
   const gameover = ctx.gameover as { winner: string | null } | undefined;
 
   const opponents = G.seatOrder.filter((id) => id !== playerID);
+  const calloutsFor = (id: string) =>
+    (G.callouts[id] ?? []).map((c) => ({ ...c, text: resolveNameTags(c.text, names) }));
 
   const targets = G.seatOrder
     .filter((id) => id !== playerID && !isEliminated(G.players[id]))
@@ -127,12 +129,16 @@ export function Board({ G, ctx, moves, playerID, matchData, onNewGame }: CoupBoa
 
         <div className={styles.tableArea}>
           <div className={styles.tableScroll}>
-            <Table G={G} opponents={opponents} currentPlayerID={currentPlayerID} nameOf={nameOf} />
+            <Table G={G} opponents={opponents} currentPlayerID={currentPlayerID} nameOf={nameOf} calloutsFor={calloutsFor} />
           </div>
 
           {myPlayer && playerID && (
             <div className={styles.handLayer}>
-              <Hand name={nameOf(playerID)} player={myPlayer} />
+              <Hand
+                name={nameOf(playerID)}
+                player={myPlayer}
+                callouts={calloutsFor(playerID)}
+              />
               <div className={styles.contextZone}>
                 {myStage === 'declaring' && <ActionBar coins={myPlayer.coins} targets={targets} moves={moves} />}
                 {myStage === 'reacting' && G.pending && (

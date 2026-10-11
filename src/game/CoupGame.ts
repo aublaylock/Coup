@@ -21,6 +21,7 @@ export const CoupGame: Game<CoupState> = {
       deck: [],
       seatOrder: [],
       pending: null,
+      callouts: {},
       reveal: null,
       exchange: null,
       log: [],

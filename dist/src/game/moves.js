@@ -81,7 +81,7 @@ function applyActionEffect(G, events) {
                 break;
             }
             (0, helpers_1.addLog)(G, `The assassination succeeds — ${(0, helpers_1.nameTag)(p.targetID)} must reveal an influence.`);
-            G.reveal = { playerID: p.targetID, reason: 'was assassinated', resumeAction: 'none' };
+            G.reveal = { playerID: p.targetID, reason: 'were assassinated', resumeAction: 'none' };
             events.setActivePlayers({ value: { [p.targetID]: 'revealing' } });
             break;
         }
@@ -106,6 +106,7 @@ const income = ({ G, ctx }) => {
     if (actor.coins >= 10)
         return core_1.INVALID_MOVE; // forced coup
     actor.coins += 1;
+    (0, helpers_1.declareAction)(G, ctx.currentPlayer, 'Income');
     (0, helpers_1.addLog)(G, `${(0, helpers_1.nameTag)(ctx.currentPlayer)} takes Income (+1 coin).`);
     G.turnDone = true;
 };
@@ -114,13 +115,14 @@ const foreignAid = ({ G, ctx, events }) => {
     const actorID = ctx.currentPlayer;
     if (G.players[actorID].coins >= 10)
         return core_1.INVALID_MOVE;
+    (0, helpers_1.declareAction)(G, actorID, 'Foreign Aid');
     (0, helpers_1.addLog)(G, `${(0, helpers_1.nameTag)(actorID)} attempts Foreign Aid.`);
     beginReaction(G, events, {
         action: 'foreign_aid',
         actorID,
         targetID: null,
         claimedRole: null,
-        blockableBy: ['duke'],
+        blockableBy: [...deck_1.ACTION_BLOCKERS.foreign_aid],
         eligibleBlockers: (0, helpers_1.activeSeats)(G).filter((id) => id !== actorID),
         block: null,
         passed: [],
@@ -132,13 +134,14 @@ const tax = ({ G, ctx, events }) => {
     const actorID = ctx.currentPlayer;
     if (G.players[actorID].coins >= 10)
         return core_1.INVALID_MOVE;
+    (0, helpers_1.declareAction)(G, actorID, 'Tax (Duke)');
     (0, helpers_1.addLog)(G, `${(0, helpers_1.nameTag)(actorID)} claims the Duke and attempts Tax.`);
     beginReaction(G, events, {
         action: 'tax',
         actorID,
         targetID: null,
         claimedRole: 'duke',
-        blockableBy: [],
+        blockableBy: [...deck_1.ACTION_BLOCKERS.tax],
         eligibleBlockers: [],
         block: null,
         passed: [],
@@ -153,13 +156,14 @@ const steal = ({ G, ctx, events }, targetID) => {
     if (!targetID || targetID === actorID || !G.players[targetID] || (0, helpers_1.isEliminated)(G.players[targetID])) {
         return core_1.INVALID_MOVE;
     }
+    (0, helpers_1.declareAction)(G, actorID, `Steal from ${(0, helpers_1.nameTag)(targetID)} (Captain)`);
     (0, helpers_1.addLog)(G, `${(0, helpers_1.nameTag)(actorID)} claims the Captain and attempts to steal from ${(0, helpers_1.nameTag)(targetID)}.`);
     beginReaction(G, events, {
         action: 'steal',
         actorID,
         targetID,
         claimedRole: 'captain',
-        blockableBy: ['captain', 'ambassador'],
+        blockableBy: [...deck_1.ACTION_BLOCKERS.steal],
         eligibleBlockers: [targetID],
         block: null,
         passed: [],
@@ -179,13 +183,14 @@ const assassinate = ({ G, ctx, events }, targetID) => {
     }
     // Cost is spent up front; only refunded if the Assassin claim is successfully challenged.
     actor.coins -= 3;
+    (0, helpers_1.declareAction)(G, actorID, `Assassinate ${(0, helpers_1.nameTag)(targetID)} (Assassin)`);
     (0, helpers_1.addLog)(G, `${(0, helpers_1.nameTag)(actorID)} claims the Assassin and attempts to assassinate ${(0, helpers_1.nameTag)(targetID)}.`);
     beginReaction(G, events, {
         action: 'assassinate',
         actorID,
         targetID,
         claimedRole: 'assassin',
-        blockableBy: ['contessa'],
+        blockableBy: [...deck_1.ACTION_BLOCKERS.assassinate],
         eligibleBlockers: [targetID],
         block: null,
         passed: [],
@@ -197,13 +202,14 @@ const exchange = ({ G, ctx, events }) => {
     const actorID = ctx.currentPlayer;
     if (G.players[actorID].coins >= 10)
         return core_1.INVALID_MOVE;
+    (0, helpers_1.declareAction)(G, actorID, 'Exchange (Ambassador)');
     (0, helpers_1.addLog)(G, `${(0, helpers_1.nameTag)(actorID)} claims the Ambassador and attempts to exchange cards.`);
     beginReaction(G, events, {
         action: 'exchange',
         actorID,
         targetID: null,
         claimedRole: 'ambassador',
-        blockableBy: [],
+        blockableBy: [...deck_1.ACTION_BLOCKERS.exchange],
         eligibleBlockers: [],
         block: null,
         passed: [],
@@ -220,9 +226,10 @@ const coup = ({ G, ctx, events }, targetID) => {
         return core_1.INVALID_MOVE;
     }
     actor.coins -= 7;
+    (0, helpers_1.declareAction)(G, actorID, `Coup ${(0, helpers_1.nameTag)(targetID)}`);
     (0, helpers_1.addLog)(G, `${(0, helpers_1.nameTag)(actorID)} launches a Coup against ${(0, helpers_1.nameTag)(targetID)}.`);
     // Coup can never be blocked or challenged — straight to the reveal.
-    G.reveal = { playerID: targetID, reason: 'was hit by a Coup', resumeAction: 'none' };
+    G.reveal = { playerID: targetID, reason: 'were hit by a Coup', resumeAction: 'none' };
     events.setActivePlayers({ value: { [targetID]: 'revealing' } });
 };
 exports.coup = coup;
@@ -261,6 +268,7 @@ const respondChallenge = ({ G, random, events }, callerID) => {
         return core_1.INVALID_MOVE;
     if (!(0, helpers_1.activeSeats)(G).includes(callerID))
         return core_1.INVALID_MOVE;
+    (0, helpers_1.addCallout)(G, callerID, 'challenge', `Challenges ${(0, helpers_1.nameTag)(claimant)}'s ${(0, helpers_1.roleLabel)(claimedRole)}`);
     (0, helpers_1.addLog)(G, `${(0, helpers_1.nameTag)(callerID)} challenges ${(0, helpers_1.nameTag)(claimant)}'s claim to the ${(0, helpers_1.roleLabel)(claimedRole)}.`);
     const claimantPlayer = G.players[claimant];
     const cardIdx = claimantPlayer.influence.findIndex((c) => !c.revealed && c.role === claimedRole);
@@ -284,7 +292,7 @@ const respondChallenge = ({ G, random, events }, callerID) => {
         (0, helpers_1.addLog)(G, `${(0, helpers_1.nameTag)(claimant)} can't reveal the ${(0, helpers_1.roleLabel)(claimedRole)} — caught bluffing!`);
         G.reveal = {
             playerID: claimant,
-            reason: 'was caught bluffing',
+            reason: 'were caught bluffing',
             resumeAction: G.pending.stage === 'block' ? 'block_fails' : 'action_fails',
         };
     }
@@ -301,6 +309,7 @@ const respondBlock = ({ G, events }, callerID, claimedRole) => {
     G.pending.block = { blockerID: callerID, claimedRole };
     G.pending.stage = 'block';
     G.pending.passed = [];
+    (0, helpers_1.addCallout)(G, callerID, 'block', `Blocks with ${(0, helpers_1.roleLabel)(claimedRole)}`);
     (0, helpers_1.addLog)(G, `${(0, helpers_1.nameTag)(callerID)} claims the ${(0, helpers_1.roleLabel)(claimedRole)} to block.`);
     const others = (0, helpers_1.activeSeats)(G).filter((id) => id !== callerID);
     const value = {};

@@ -47,7 +47,7 @@ export interface PendingAction {
 
 export interface RevealRequest {
   playerID: string;
-  reason: string; // human-readable, shown in the reveal prompt
+  reason: string; // shown in the reveal prompt as "you <reason>", so phrase it for "you"
   resumeAction: ResumeAction;
 }
 
@@ -61,12 +61,21 @@ export interface LogEntry {
   text: string;
 }
 
+// One of the speech bubbles shown above a player's cards for the current turn: the
+// action they declared, a block, or a challenge. `text` may contain nameTag()s.
+export interface Callout {
+  kind: 'action' | 'block' | 'challenge';
+  text: string;
+}
+
 export interface CoupState {
   players: Record<string, CoupPlayer>;
   deck: (Role | HiddenRole)[]; // court deck; hidden for non-server views
   // Turn order fixed at game start. Empty array = lobby not started yet.
   seatOrder: string[];
   pending: PendingAction | null;
+  // Cleared whenever a new action is declared, so it only holds the latest turn's.
+  callouts: Record<string, Callout[]>;
   reveal: RevealRequest | null;
   exchange: ExchangeState | null;
   log: LogEntry[];

@@ -1,8 +1,8 @@
 import { INVALID_MOVE } from 'boardgame.io/core';
 import type { Move } from 'boardgame.io';
 import type { CoupState, PendingAction, Role } from './types';
-import { buildDeck } from './deck';
-import { activeSeats, addLog, isEliminated, nameTag, roleLabel } from './helpers';
+import { ACTION_BLOCKERS, buildDeck } from './deck';
+import { activeSeats, addCallout, addLog, declareAction, isEliminated, nameTag, roleLabel } from './helpers';
 
 // ---------------------------------------------------------------------------
 // Lobby
@@ -91,7 +91,7 @@ function applyActionEffect(G: CoupState, events: { setActivePlayers: SetActivePl
         break;
       }
       addLog(G, `The assassination succeeds — ${nameTag(p.targetID!)} must reveal an influence.`);
-      G.reveal = { playerID: p.targetID!, reason: 'was assassinated', resumeAction: 'none' };
+      G.reveal = { playerID: p.targetID!, reason: 'were assassinated', resumeAction: 'none' };
       events.setActivePlayers({ value: { [p.targetID!]: 'revealing' } });
       break;
     }
@@ -118,6 +118,7 @@ export const income: Move<CoupState> = ({ G, ctx }) => {
   const actor = G.players[ctx.currentPlayer];
   if (actor.coins >= 10) return INVALID_MOVE; // forced coup
   actor.coins += 1;
+  declareAction(G, ctx.currentPlayer, 'Income');
   addLog(G, `${nameTag(ctx.currentPlayer)} takes Income (+1 coin).`);
   G.turnDone = true;
 };
@@ -125,13 +126,14 @@ export const income: Move<CoupState> = ({ G, ctx }) => {
 export const foreignAid: Move<CoupState> = ({ G, ctx, events }) => {
   const actorID = ctx.currentPlayer;
   if (G.players[actorID].coins >= 10) return INVALID_MOVE;
+  declareAction(G, actorID, 'Foreign Aid');
   addLog(G, `${nameTag(actorID)} attempts Foreign Aid.`);
   beginReaction(G, events, {
     action: 'foreign_aid',
     actorID,
     targetID: null,
     claimedRole: null,
-    blockableBy: ['duke'],
+    blockableBy: [...ACTION_BLOCKERS.foreign_aid],
     eligibleBlockers: activeSeats(G).filter((id) => id !== actorID),
     block: null,
     passed: [],
@@ -142,13 +144,14 @@ export const foreignAid: Move<CoupState> = ({ G, ctx, events }) => {
 export const tax: Move<CoupState> = ({ G, ctx, events }) => {
   const actorID = ctx.currentPlayer;
   if (G.players[actorID].coins >= 10) return INVALID_MOVE;
+  declareAction(G, actorID, 'Tax (Duke)');
   addLog(G, `${nameTag(actorID)} claims the Duke and attempts Tax.`);
   beginReaction(G, events, {
     action: 'tax',
     actorID,
     targetID: null,
     claimedRole: 'duke',
-    blockableBy: [],
+    blockableBy: [...ACTION_BLOCKERS.tax],
     eligibleBlockers: [],
     block: null,
     passed: [],
@@ -162,13 +165,14 @@ export const steal: Move<CoupState> = ({ G, ctx, events }, targetID: string) => 
   if (!targetID || targetID === actorID || !G.players[targetID] || isEliminated(G.players[targetID])) {
     return INVALID_MOVE;
   }
+  declareAction(G, actorID, `Steal from ${nameTag(targetID)} (Captain)`);
   addLog(G, `${nameTag(actorID)} claims the Captain and attempts to steal from ${nameTag(targetID)}.`);
   beginReaction(G, events, {
     action: 'steal',
     actorID,
     targetID,
     claimedRole: 'captain',
-    blockableBy: ['captain', 'ambassador'],
+    blockableBy: [...ACTION_BLOCKERS.steal],
     eligibleBlockers: [targetID],
     block: null,
     passed: [],
@@ -186,13 +190,14 @@ export const assassinate: Move<CoupState> = ({ G, ctx, events }, targetID: strin
   }
   // Cost is spent up front; only refunded if the Assassin claim is successfully challenged.
   actor.coins -= 3;
+  declareAction(G, actorID, `Assassinate ${nameTag(targetID)} (Assassin)`);
   addLog(G, `${nameTag(actorID)} claims the Assassin and attempts to assassinate ${nameTag(targetID)}.`);
   beginReaction(G, events, {
     action: 'assassinate',
     actorID,
     targetID,
     claimedRole: 'assassin',
-    blockableBy: ['contessa'],
+    blockableBy: [...ACTION_BLOCKERS.assassinate],
     eligibleBlockers: [targetID],
     block: null,
     passed: [],
@@ -203,13 +208,14 @@ export const assassinate: Move<CoupState> = ({ G, ctx, events }, targetID: strin
 export const exchange: Move<CoupState> = ({ G, ctx, events }) => {
   const actorID = ctx.currentPlayer;
   if (G.players[actorID].coins >= 10) return INVALID_MOVE;
+  declareAction(G, actorID, 'Exchange (Ambassador)');
   addLog(G, `${nameTag(actorID)} claims the Ambassador and attempts to exchange cards.`);
   beginReaction(G, events, {
     action: 'exchange',
     actorID,
     targetID: null,
     claimedRole: 'ambassador',
-    blockableBy: [],
+    blockableBy: [...ACTION_BLOCKERS.exchange],
     eligibleBlockers: [],
     block: null,
     passed: [],
@@ -225,9 +231,10 @@ export const coup: Move<CoupState> = ({ G, ctx, events }, targetID: string) => {
     return INVALID_MOVE;
   }
   actor.coins -= 7;
+  declareAction(G, actorID, `Coup ${nameTag(targetID)}`);
   addLog(G, `${nameTag(actorID)} launches a Coup against ${nameTag(targetID)}.`);
   // Coup can never be blocked or challenged — straight to the reveal.
-  G.reveal = { playerID: targetID, reason: 'was hit by a Coup', resumeAction: 'none' };
+  G.reveal = { playerID: targetID, reason: 'were hit by a Coup', resumeAction: 'none' };
   events.setActivePlayers({ value: { [targetID]: 'revealing' } });
 };
 
@@ -264,6 +271,7 @@ export const respondChallenge: Move<CoupState> = ({ G, random, events }, callerI
   if (!claimedRole || callerID === claimant) return INVALID_MOVE;
   if (!activeSeats(G).includes(callerID)) return INVALID_MOVE;
 
+  addCallout(G, callerID, 'challenge', `Challenges ${nameTag(claimant)}'s ${roleLabel(claimedRole)}`);
   addLog(G, `${nameTag(callerID)} challenges ${nameTag(claimant)}'s claim to the ${roleLabel(claimedRole)}.`);
 
   const claimantPlayer = G.players[claimant];
@@ -288,7 +296,7 @@ export const respondChallenge: Move<CoupState> = ({ G, random, events }, callerI
     addLog(G, `${nameTag(claimant)} can't reveal the ${roleLabel(claimedRole)} — caught bluffing!`);
     G.reveal = {
       playerID: claimant,
-      reason: 'was caught bluffing',
+      reason: 'were caught bluffing',
       resumeAction: G.pending.stage === 'block' ? 'block_fails' : 'action_fails',
     };
   }
@@ -303,6 +311,7 @@ export const respondBlock: Move<CoupState> = ({ G, events }, callerID: string, c
   G.pending.block = { blockerID: callerID, claimedRole };
   G.pending.stage = 'block';
   G.pending.passed = [];
+  addCallout(G, callerID, 'block', `Blocks with ${roleLabel(claimedRole)}`);
   addLog(G, `${nameTag(callerID)} claims the ${roleLabel(claimedRole)} to block.`);
 
   const others = activeSeats(G).filter((id) => id !== callerID);

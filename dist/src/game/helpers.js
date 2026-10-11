@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.isEliminated = isEliminated;
 exports.activeSeats = activeSeats;
 exports.addLog = addLog;
+exports.declareAction = declareAction;
+exports.addCallout = addCallout;
 exports.nameTag = nameTag;
 exports.resolveNameTags = resolveNameTags;
 exports.roleLabel = roleLabel;
@@ -18,6 +20,14 @@ function addLog(G, text) {
     G.log.push({ id: G.nextLogID++, text });
     if (G.log.length > 60)
         G.log.shift();
+}
+/** Start a new turn's callouts with the action `playerID` just declared. */
+function declareAction(G, playerID, text) {
+    G.callouts = { [playerID]: [{ kind: 'action', text }] };
+}
+function addCallout(G, playerID, kind, text) {
+    var _a;
+    ((_a = G.callouts)[playerID] ?? (_a[playerID] = [])).push({ kind, text });
 }
 // Moves don't have reliable access to display names server-side (boardgame.io's
 // Ctx doesn't expose matchData to move functions), so log text carries the

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.INFO_CARD_IMAGE = exports.COIN_IMAGE = exports.CARD_BACK_IMAGE = exports.ROLE_INFO = exports.ALL_ROLES = void 0;
+exports.INFO_CARD_IMAGE = exports.COIN_IMAGE = exports.CARD_BACK_IMAGE = exports.ACTION_BLOCKERS = exports.ROLE_INFO = exports.ALL_ROLES = void 0;
 exports.buildDeck = buildDeck;
 exports.ALL_ROLES = ['duke', 'assassin', 'captain', 'ambassador', 'contessa'];
 exports.ROLE_INFO = {
@@ -34,6 +34,16 @@ exports.ROLE_INFO = {
         action: '',
         blocks: 'Blocks Assassination.',
     },
+};
+/** Roles that can block each action. Used by the moves and by the ActionBar's hover hints. */
+exports.ACTION_BLOCKERS = {
+    income: [],
+    foreign_aid: ['duke'],
+    tax: [],
+    steal: ['captain', 'ambassador'],
+    assassinate: ['contessa'],
+    exchange: [],
+    coup: [],
 };
 exports.CARD_BACK_IMAGE = '/cards/back.png';
 exports.COIN_IMAGE = '/cards/coin.png';

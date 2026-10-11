@@ -19,6 +19,7 @@ exports.CoupGame = {
             deck: [],
             seatOrder: [],
             pending: null,
+            callouts: {},
             reveal: null,
             exchange: null,
             log: [],

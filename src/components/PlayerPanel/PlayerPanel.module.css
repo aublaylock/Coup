@@ -95,3 +95,55 @@
   background: var(--color-danger);
   color: #fff;
 }
+
+.callouts {
+  position: absolute;
+  bottom: calc(100% + 18px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 2;
+}
+
+.actionBubble {
+  position: relative;
+  white-space: nowrap;
+  background: var(--color-card);
+  color: #1a1a1a;
+  border: 2px solid var(--color-accent);
+  border-radius: 14px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Little pointer under the bubble. */
+.actionBubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--color-accent);
+}
+
+.block {
+  border-color: #5aa9e6;
+}
+
+.block::after {
+  border-top-color: #5aa9e6;
+}
+
+.challenge {
+  border-color: var(--color-danger);
+}
+
+.challenge::after {
+  border-top-color: var(--color-danger);
+}

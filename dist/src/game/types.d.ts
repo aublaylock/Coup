@@ -38,11 +38,16 @@ export interface LogEntry {
     id: number;
     text: string;
 }
+export interface Callout {
+    kind: 'action' | 'block' | 'challenge';
+    text: string;
+}
 export interface CoupState {
     players: Record<string, CoupPlayer>;
     deck: (Role | HiddenRole)[];
     seatOrder: string[];
     pending: PendingAction | null;
+    callouts: Record<string, Callout[]>;
     reveal: RevealRequest | null;
     exchange: ExchangeState | null;
     log: LogEntry[];

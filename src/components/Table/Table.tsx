@@ -1,4 +1,4 @@
-import type { CoupState } from '../../game/types';
+import type { Callout, CoupState } from '../../game/types';
 import { isEliminated } from '../../game/helpers';
 import { CARD_BACK_IMAGE } from '../../game/deck';
 import { PlayerPanel } from '../PlayerPanel/PlayerPanel';
@@ -9,6 +9,7 @@ interface TableProps {
   opponents: string[]; // seatOrder minus "me", in seat order
   currentPlayerID: string;
   nameOf: (id: string) => string;
+  calloutsFor: (id: string) => Callout[];
 }
 
 /** Angle (degrees, 0 = straight up, clockwise) for opponent seat `i` of `total`,
@@ -20,7 +21,7 @@ function seatAngle(i: number, total: number): number {
   return -spread / 2 + (i * spread) / (total - 1);
 }
 
-export function Table({ G, opponents, currentPlayerID, nameOf }: TableProps) {
+export function Table({ G, opponents, currentPlayerID, nameOf, calloutsFor }: TableProps) {
   const deckCount = G.deck.length;
   const stackSize = Math.min(4, deckCount);
 
@@ -52,6 +53,7 @@ export function Table({ G, opponents, currentPlayerID, nameOf }: TableProps) {
                 player={G.players[id]}
                 isCurrentTurn={id === currentPlayerID}
                 eliminated={isEliminated(G.players[id])}
+                callouts={calloutsFor(id)}
               />
             </div>
           );

@@ -1,4 +1,4 @@
-import type { Role } from './types';
+import type { ActionType, Role } from './types';
 
 export const ALL_ROLES: Role[] = ['duke', 'assassin', 'captain', 'ambassador', 'contessa'];
 
@@ -33,6 +33,17 @@ export const ROLE_INFO: Record<Role, { label: string; image: string; action: str
     action: '',
     blocks: 'Blocks Assassination.',
   },
+};
+
+/** Roles that can block each action. Used by the moves and by the ActionBar's hover hints. */
+export const ACTION_BLOCKERS: Record<ActionType | 'income' | 'coup', Role[]> = {
+  income: [],
+  foreign_aid: ['duke'],
+  tax: [],
+  steal: ['captain', 'ambassador'],
+  assassinate: ['contessa'],
+  exchange: [],
+  coup: [],
 };
 
 export const CARD_BACK_IMAGE = '/cards/back.png';
