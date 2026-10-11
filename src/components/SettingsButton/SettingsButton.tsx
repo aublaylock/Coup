@@ -4,21 +4,22 @@ import styles from './SettingsButton.module.css';
 const STORAGE_KEY = 'coup_settings';
 const MIN_SCALE = 1;
 const MAX_SCALE = 3;
-const DEFAULT_SCALE = 2.5;
 
 interface Settings {
   handScale: number;
   tableScale: number;
 }
 
+const DEFAULT_SETTINGS: Settings = { handScale: 1.5, tableScale: 1.2 };
+
 function loadSettings(): Settings {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return { handScale: DEFAULT_SCALE, tableScale: DEFAULT_SCALE, ...JSON.parse(raw) };
+    if (raw) return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
   } catch {
     /* ignore */
   }
-  return { handScale: DEFAULT_SCALE, tableScale: DEFAULT_SCALE };
+  return DEFAULT_SETTINGS;
 }
 
 function saveSettings(settings: Settings) {
@@ -94,7 +95,7 @@ export function SettingsButton() {
           {slider('Table card size', 'tableScale')}
           <button
             className={styles.resetBtn}
-            onClick={() => setSettings({ handScale: DEFAULT_SCALE, tableScale: DEFAULT_SCALE })}
+            onClick={() => setSettings(DEFAULT_SETTINGS)}
           >
             Reset
           </button>

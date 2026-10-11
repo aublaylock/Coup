@@ -94,30 +94,35 @@ export function Board({ G, ctx, moves, playerID, matchData }: CoupBoardProps) {
         <ExchangeModal drawn={G.exchange.drawn} myID={playerID} myInfluence={myPlayer.influence} moves={moves} />
       )}
 
-      {/* Everything between the header and the hand dock scrolls independently,
-          so the dock (and your hand) always stays put at the bottom of the screen
-          instead of a fixed-position overlay covering whatever happens to be there. */}
-      <div className={styles.scrollArea}>
-        <Table G={G} opponents={opponents} currentPlayerID={currentPlayerID} nameOf={nameOf} />
-        <GameLog entries={G.log} names={names} />
-      </div>
-
-      {myPlayer && playerID && (
-        <div className={styles.bottomDock}>
-          <div className={styles.contextZone}>
-            {myStage === 'declaring' && <ActionBar coins={myPlayer.coins} targets={targets} moves={moves} />}
-            {myStage === 'reacting' && G.pending && (
-              <ReactionPanel pending={G.pending} myID={playerID} names={names} moves={moves} />
-            )}
-            {!myStage && !gameover && (
-              <p className={styles.waitMsg}>
-                {currentPlayerID === playerID ? '' : `Waiting for ${nameOf(currentPlayerID)}…`}
-              </p>
-            )}
-          </div>
-          <Hand name={nameOf(playerID)} player={myPlayer} />
+      {/* The log sits in its own column on the left. On the right, the table
+          fills the space and your hand floats on top of it, anchored to the
+          bottom, with no separate dock. */}
+      <div className={styles.playArea}>
+        <div className={styles.logColumn}>
+          <GameLog entries={G.log} names={names} />
         </div>
-      )}
+
+        <div className={styles.tableArea}>
+          <div className={styles.tableScroll}>
+            <Table G={G} opponents={opponents} currentPlayerID={currentPlayerID} nameOf={nameOf} />
+          </div>
+
+          {myPlayer && playerID && (
+            <div className={styles.handLayer}>
+              <div className={styles.contextZone}>
+                {myStage === 'declaring' && <ActionBar coins={myPlayer.coins} targets={targets} moves={moves} />}
+                {myStage === 'reacting' && G.pending && (
+                  <ReactionPanel pending={G.pending} myID={playerID} names={names} moves={moves} />
+                )}
+                {!myStage && !gameover && currentPlayerID !== playerID && (
+                  <p className={styles.waitMsg}>Waiting for {nameOf(currentPlayerID)}…</p>
+                )}
+              </div>
+              <Hand name={nameOf(playerID)} player={myPlayer} />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

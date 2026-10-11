@@ -12,7 +12,7 @@
 }
 
 .card {
-  width: calc(48px * var(--table-card-scale, 2.5));
+  width: calc(48px * var(--table-card-scale, 1.2));
   aspect-ratio: 400 / 560;
   border-radius: 12px;
   overflow: hidden;

@@ -1,7 +1,6 @@
-/* App shell: header and the bottom dock are fixed-size flex items; everything
- * between them (the table + log) scrolls in its own region. This way the dock
- * (and your hand) always sits right after the scrollable content instead of a
- * fixed overlay that can cover whatever happens to be at the bottom of it. */
+/* App shell: a fixed header, then a play area with the game log on the left
+ * and the table on the right. Your hand is overlaid on the bottom of the
+ * table rather than sitting in a separate dock. */
 .board {
   max-width: 1600px;
   margin: 0 auto;
@@ -51,29 +50,84 @@
   font-weight: 700;
 }
 
-.bottomDock {
-  flex: 0 0 auto;
+.playArea {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  gap: 16px;
+  padding: 16px 20px;
+}
+
+.logColumn {
+  flex: 0 0 260px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  /* Leaves room for the fixed "Leave Match" button in the bottom-left corner. */
+  padding-bottom: 44px;
+}
+
+.tableArea {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+.tableScroll {
+  height: 100%;
+  overflow-y: auto;
+  /* The side seats hang past the felt's edge; pad so they aren't clipped. */
+  padding: 0 calc(50px * var(--table-card-scale, 1.2));
+}
+
+/* Floats over the table. Only the panels themselves catch clicks, so the
+ * table stays interactive in the gaps around them. */
+.handLayer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  padding: 14px 16px 18px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.25) 100%);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 8px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.handLayer > * {
+  pointer-events: auto;
 }
 
 .contextZone {
   width: 100%;
   max-width: 640px;
-  min-height: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .waitMsg {
+  align-self: center;
   color: var(--color-text-muted);
   font-size: 0.85rem;
   font-style: italic;
   text-align: center;
-  padding: 4px;
+  padding: 4px 14px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 14px;
+}
+
+@media (max-width: 800px) {
+  .playArea {
+    flex-direction: column;
+  }
+
+  .logColumn {
+    flex: 0 0 110px;
+    padding-bottom: 0;
+  }
 }
 
 .gameoverOverlay {

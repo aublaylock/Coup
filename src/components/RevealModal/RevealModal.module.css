@@ -57,7 +57,7 @@
 }
 
 .cardImg {
-  width: calc(84px * var(--hand-card-scale, 2.5));
+  width: calc(84px * var(--hand-card-scale, 1.5));
   aspect-ratio: 400 / 560;
   object-fit: cover;
   border-radius: 12px;
