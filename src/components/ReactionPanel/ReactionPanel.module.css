@@ -41,3 +41,19 @@
   background: rgba(212, 175, 55, 0.15);
   border-color: var(--color-accent);
 }
+
+.passedPanel {
+  border-color: var(--color-success);
+}
+
+.passedMsg {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.check {
+  color: var(--color-success);
+  font-weight: 800;
+  margin-right: 4px;
+}

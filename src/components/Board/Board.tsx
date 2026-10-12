@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { BoardProps } from 'boardgame.io/react';
 import type { CoupState } from '../../game/types';
-import { isEliminated, resolveNameTags } from '../../game/helpers';
+import { activeSeats, isEliminated, resolveNameTags } from '../../game/helpers';
 import { Table } from '../Table/Table';
 import { Hand } from '../Hand/Hand';
 import { ActionBar } from '../ActionBar/ActionBar';
@@ -71,6 +71,12 @@ export function Board({ G, ctx, moves, playerID, matchData, onNewGame }: CoupBoa
   const opponents = G.seatOrder.filter((id) => id !== playerID);
   const calloutsFor = (id: string) =>
     (G.callouts[id] ?? []).map((c) => ({ ...c, text: resolveNameTags(c.text, names) }));
+
+  // Mirrors respondPass: everyone alive except the player whose claim is on the table.
+  const claimantID = G.pending ? (G.pending.stage === 'block' ? G.pending.block!.blockerID : G.pending.actorID) : null;
+  const undecided = G.pending
+    ? activeSeats(G).filter((id) => id !== claimantID && !G.pending!.passed.includes(id))
+    : [];
 
   const targets = G.seatOrder
     .filter((id) => id !== playerID && !isEliminated(G.players[id]))
@@ -142,7 +148,13 @@ export function Board({ G, ctx, moves, playerID, matchData, onNewGame }: CoupBoa
               <div className={styles.contextZone}>
                 {myStage === 'declaring' && <ActionBar coins={myPlayer.coins} targets={targets} moves={moves} />}
                 {myStage === 'reacting' && G.pending && (
-                  <ReactionPanel pending={G.pending} myID={playerID} names={names} moves={moves} />
+                  <ReactionPanel
+                    pending={G.pending}
+                    myID={playerID}
+                    names={names}
+                    undecided={undecided}
+                    moves={moves}
+                  />
                 )}
                 {!myStage && !gameover && currentPlayerID !== playerID && (
                   <p className={styles.waitMsg}>Waiting for {nameOf(currentPlayerID)}…</p>

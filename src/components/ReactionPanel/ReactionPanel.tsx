@@ -6,6 +6,8 @@ interface ReactionPanelProps {
   pending: PendingAction;
   myID: string;
   names: Record<string, string>;
+  /** Players who still need to respond at this decision point. */
+  undecided: string[];
   moves: Record<string, (...args: any[]) => void>;
 }
 
@@ -17,7 +19,7 @@ const ACTION_LABEL: Record<ActionType, string> = {
   exchange: 'an Exchange',
 };
 
-export function ReactionPanel({ pending, myID, names, moves }: ReactionPanelProps) {
+export function ReactionPanel({ pending, myID, names, undecided, moves }: ReactionPanelProps) {
   const nameOf = (id: string) => names[id] ?? `Player ${Number(id) + 1}`;
   const isBlockStage = pending.stage === 'block';
   const claimant = isBlockStage ? pending.block!.blockerID : pending.actorID;
@@ -29,6 +31,18 @@ export function ReactionPanel({ pending, myID, names, moves }: ReactionPanelProp
     : `${nameOf(pending.actorID)} attempts ${ACTION_LABEL[pending.action]}` +
       (pending.targetID ? ` against ${nameOf(pending.targetID)}` : '') +
       (claimedRole ? ` — claims the ${roleLabel(claimedRole)}.` : '.');
+
+  if (pending.passed.includes(myID)) {
+    return (
+      <div className={`${styles.panel} ${styles.passedPanel}`}>
+        <p className={styles.description}>{description}</p>
+        <p className={styles.passedMsg}>
+          <span className={styles.check}>✓</span> You passed.
+          {undecided.length > 0 && ` Waiting on ${undecided.map(nameOf).join(', ')}…`}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.panel}>
